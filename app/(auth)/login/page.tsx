@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -27,44 +27,52 @@ export default function LoginPage() {
       return
     }
 
-    // ✅ aquí la redirección que querías
     router.push(redirectTo)
   }
 
   return (
+    <form onSubmit={onSubmit} className="border p-6 rounded space-y-4 w-full max-w-sm">
+      <h1 className="text-xl font-bold">Iniciar sesión</h1>
+
+      <div>
+        <label className="block text-sm mb-1">Email</label>
+        <input
+          className="border w-full px-3 py-2 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1">Contraseña</label>
+        <input
+          className="border w-full px-3 py-2 rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          required
+        />
+      </div>
+
+      <button
+        disabled={loading}
+        className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-60"
+      >
+        {loading ? "Entrando..." : "Entrar"}
+      </button>
+    </form>
+  )
+}
+
+// ⬇️ Aquí viene la clave
+export default function LoginPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={onSubmit} className="border p-6 rounded space-y-4 w-full max-w-sm">
-        <h1 className="text-xl font-bold">Iniciar sesión</h1>
-
-        <div>
-          <label className="block text-sm mb-1">Email</label>
-          <input
-            className="border w-full px-3 py-2 rounded"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            type="email"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Contraseña</label>
-          <input
-            className="border w-full px-3 py-2 rounded"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            type="password"
-            required
-          />
-        </div>
-
-        <button
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-60"
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-      </form>
+      <Suspense fallback={<p>Cargando formulario...</p>}>
+        <LoginForm />
+      </Suspense>
     </div>
   )
 }
